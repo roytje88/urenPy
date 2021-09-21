@@ -13,4 +13,4 @@ After that, the flask-app runs on http://0.0.0.0:8050/dash.
 
 # Example
 
-![alt text](https://raw.githubusercontent.com/roytje88/urenPy/main/example.png)
+![alt text](https://raw.githubusercontent.com/roytje88/urenPy/1cb40cecade18bd65892f97b1910f45f8ccbff58/example.png)
