@@ -1,0 +1,6 @@
+{
+    "python.pythonPath": "/home/cjvanzwol/miniconda3/envs/urenpy/bin/python",
+    "python.venvPath": "~/miniconda3/envs/urenpy",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
+}

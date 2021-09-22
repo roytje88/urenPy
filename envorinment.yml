@@ -1,0 +1,10 @@
+name: urenpy
+channels:
+  - conda-forge
+dependencies:
+  - dash
+  - dash-core-components
+  - dash-html-components
+  - dash-table
+  - pip:
+      - pip_package
