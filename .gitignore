@@ -134,5 +134,5 @@ tests/
 urenPy.db
 
 # VSCode server
-.theia
+.theia/
 *.theia-workspace
