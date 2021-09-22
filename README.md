@@ -3,7 +3,6 @@ Flask app to keep track of working hours
 
 # To do
 * add the uren-tab
-* Create a `requirements` file for the virtualenv
 * Use a WSGI Production server for flask
 
 # How to use

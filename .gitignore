@@ -132,3 +132,7 @@ dmypy.json
 
 tests/
 urenPy.db
+
+# VSCode server
+.theia/
+*.theia-workspace
