@@ -31,9 +31,7 @@ def create_table(conn, create_table_sql):
         
 
 def createDB():
-    print('createdb')
     conn = create_connection('urenPy.db')
-    print(conn)
     persoonTable = """CREATE TABLE IF NOT EXISTS persoon (
                     id integer PRIMARY KEY AUTOINCREMENT,
                     voornaam text not null,
@@ -111,6 +109,16 @@ def createDB():
     create_table(conn, standaardUren)
     create_table(conn, kalender)
 
+def addUrensoort(conn, percentage,omschryving):
+    sql = "INSERT INTO urensoort (percentage, omschryving) VALUES ('"+\
+    percentage+"','"+\
+    omschryving+"');"
+    try:
+        c = conn.cursor()
+        c.execute(sql)
+        conn.commit()
+    except Error as e:
+        print(e)
     
     
 def addKalenderdata(jaar):

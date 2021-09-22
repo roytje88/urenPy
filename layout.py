@@ -8,10 +8,19 @@ import pandas as pd
 styling = layoutStyles()
 database = 'urenPy.db'
 if not os.path.isfile(database):
-    print('hoi')
     from deploy import *
+    
     createDB()
     print("No database file found. I've created an empty database file.")
+    print("Now adding default data...")
+    for i in [2021,2022,2023]:
+        addKalenderdata(i)
+    urensoorten = [['10000','Regulier'],
+                   ['10000','Ziek'],
+                   ['10000','Verlof'],
+                   ['10000','Bijzonder verlof']]
+    for i in urensoorten:
+        addUrensoort(create_connection(database),i[0],i[1])
 
 frames = dframes()
 
