@@ -59,7 +59,8 @@ def createDB():
                         verlofuren integer,
                         bijzverlofuren integer,
                         id_werkgever,
-                        id_persoon
+                        id_persoon,
+                        sts_rec integer
     );"""
     soortenUrenTable = """CREATE TABLE IF NOT EXISTS urensoort (
                         id integer PRIMARY KEY AUTOINCREMENT,

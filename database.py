@@ -58,7 +58,44 @@ def addPerson(conn, voornaam, tussenvoegsel, achternaam, email):
                 print(e)
     except:
         pass
-        
+
+def addContract(conn, dd_begin, dd_eind, percentage, uurloon, verlofuren, bijzverlofuren, werkgever, email):        
+    conn = create_connection(database)
+    c = conn.cursor()
+    c.execute("select id from werkgever where naam = '"+werkgever+"';")
+    id_werkgever = str(c.fetchall()[0][0])
+
+    conn = create_connection(database)
+    c = conn.cursor()
+    c.execute("select id from persoon where email = '"+email+"';")
+    id_persoon = str(c.fetchall()[0][0])
+    
+    sql = "INSERT INTO contracten (dd_begin, dd_eind, percentage, uurloon, verlofuren, bijzverlofuren, id_werkgever, id_persoon, sts_rec) VALUES ('"+\
+        dd_begin+"','"+\
+        dd_eind+"','"+\
+        percentage+"','"+\
+        uurloon+"','"+\
+        verlofuren+"','"+\
+        bijzverlofuren+"','"+\
+        id_werkgever+"','"+\
+        id_persoon+"','1');"
+    try:
+        c = conn.cursor()
+        c.execute(sql)
+        conn.commit()
+    except Error as e:
+        print(e)
+def addUrensoort(conn, percentage,omschryving):
+    sql = "INSERT INTO urensoort (percentage, omschryving) VALUES ('"+\
+    percentage+"','"+\
+    omschryving+"');"
+    try:
+        conn = create_connection(database)
+        c = conn.cursor()
+        c.execute(sql)
+        conn.commit()
+    except Error as e:
+        print(e)
 
 
 def readTable(table,inclusieflogischverwijderd=True):
@@ -90,7 +127,28 @@ def dframes():
     
     frames['werkgevers'] = werkgevers.to_dict()
     
+    contracten = readTable('contracten',inclusieflogischverwijderd=False)
+    contracten['id_persoon'] = contracten['id_persoon'].astype(int)
+    contracten['id_werkgever'] = contracten['id_werkgever'].astype(int)
+    merged = contracten.merge(readTable('persoon'), left_on='id_persoon',right_on='id', how='left').merge(readTable('werkgever'), left_on='id_werkgever', right_on='id', how='left')
+    merged['persoon'] = merged[['voornaam','tussenvoegsel','achternaam']].agg(' '.join, axis=1)
+    merged = merged[['id_x','dd_begin','dd_eind','percentage','uurloon','verlofuren','bijzverlofuren','persoon','naam']]
+    merged.set_index('id_x')
+    contracten2 = merged.rename(columns={'id_x': 'id',
+                                        'dd_begin': 'Begindatum',
+                                        'dd_eind': 'Einddatum',
+                                        'percentage': 'Percentage deeltijd',
+                                        'uurloon': 'Uurloon',
+                                        'verlofuren': 'Wettelijke verlofuren',
+                                        'bijzverlofuren': 'Bijzonder verlofuren',
+                                        'persoon': 'Persoon',
+                                        'naam': 'Werkgever'
+                                                                                         })
     
+    frames['contracten'] = contracten2.to_dict()
+    print(contracten.to_dict())
+    print([{'name': i, 'id': i} for i in frames['contracten'].keys() if i not in ['id']])
+    print(pd.DataFrame.from_dict(frames['contracten']).to_dict('records'))
     return frames
 
 
