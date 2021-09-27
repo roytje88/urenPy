@@ -146,9 +146,6 @@ def dframes():
                                                                                          })
     
     frames['contracten'] = contracten2.to_dict()
-    print(contracten.to_dict())
-    print([{'name': i, 'id': i} for i in frames['contracten'].keys() if i not in ['id']])
-    print(pd.DataFrame.from_dict(frames['contracten']).to_dict('records'))
     return frames
 
 

@@ -119,6 +119,6 @@ def register_callbacks(app):
         if delContractBtn > 0 and contractenDropdown != None:
             logischVerwijderen('contracten', contractenDropdown)
         frames=dframes()
-        persDropd = [{'label': i['Voornaam'] + ' ' + i['Tussenvoegsel']+ ' ' + i['Achternaam'], 'value': i['id']} for i in pd.DataFrame.from_dict(frames['personen']).to_dict('records')]
-        return pd.DataFrame.from_dict(frames['contracten']).to_dict('records'), 0, 0, persDropd
+        contrDd = [{'label': 'Van '+i['Begindatum'] + ' t/m ' + i['Einddatum']+', ' + i['Persoon']+ ', '+ i['Werkgever'], 'value': i['id']} for i in pd.DataFrame.from_dict(frames['contracten']).to_dict('records')]
+        return pd.DataFrame.from_dict(frames['contracten']).to_dict('records'), 0, 0, contrDd
     
