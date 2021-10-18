@@ -29,6 +29,14 @@ def layoutStyles():
                                 'margin-right': '1%',
                                 'text-align': 'center',
                                 'border-radius': '10px'                   
+                                },
+            'graphs': {'background-color': 'rgba(62,182,235,0.1)',
+                                'margin-top': '1%', 
+                                'margin-bottom': '2%', 
+                                'margin-left': '1%',
+                                'margin-right': '1%',
+                                'text-align': 'center',
+                                'border-radius': '10px'                   
                                 }
 
           

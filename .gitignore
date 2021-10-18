@@ -136,3 +136,11 @@ urenPy.db
 # VSCode server
 .theia/
 *.theia-workspace
+
+
+# script to recreate data
+reload.py
+reload.ipynb
+
+
+app/
