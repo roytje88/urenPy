@@ -4,6 +4,7 @@ import dash_table, os
 from database import readTable,dframes
 from styles import layoutStyles
 import pandas as pd
+from datetime import datetime
 
 styling = layoutStyles()
 database = 'urenPy.db'
@@ -23,6 +24,7 @@ if not os.path.isfile(database):
         addUrensoort(create_connection(database),i[0],i[1])
 
 frames = dframes()
+kalender = readTable('kalender')
 
 df = readTable('contracten')
 layout = html.Div(
@@ -40,7 +42,311 @@ layout = html.Div(
                     children =[
                         dcc.Tab(
                             label = 'Uren',
-                            style = styling['tabs']
+                            style = styling['tabs'],
+                            children = [
+                                html.Div(
+                                    style=styling['subdiv'],
+                                    children = [
+                                        html.H2('Kies het jaar en de week'),
+                                        dcc.Dropdown(
+                                            style = {'display':'inline-block', 'width':'200px'},
+                                            id='jaar',
+                                            options=[{'label': i, 'value': i} for i in kalender['jaartal'].drop_duplicates().values],
+                                            value = int(datetime.now().strftime('%Y'))
+                                            ),
+                                        dcc.Dropdown(
+                                            style = {'display':'inline-block', 'width':'200px'},
+                                            id='isoweek',
+                                            options=[{'label': i, 'value': i} for i in kalender['isoweek'].drop_duplicates().values],
+                                            value = kalender[kalender['datum']==datetime.now().strftime('%Y-%m-%d')]['isoweek'].values[0]
+                                            ),
+                                        html.Div(
+                                            children=[
+                                            html.Div(
+                                                style={'display': 'inline-block', 'width':'400px'},
+                                                children=[
+                                                    html.H2('Persoon'),
+                                                    dcc.Dropdown(
+                                                        id='persoonUrenDropdown',
+                                                        options=[{'label': i['Voornaam'] + ' ' + i['Tussenvoegsel']+ ' ' + i['Achternaam'], 'value': i['id']} for i in pd.DataFrame.from_dict(frames['personen']).to_dict('records')]
+                                                        ),
+                                                    ]
+                                                ),
+
+                                            html.Div(
+                                                style={'display': 'inline-block', 'width':'400px'},
+                                                children=[
+
+                                                    html.H2('Contract'),
+                                                    dcc.Dropdown(
+                                                        id='contractUrenDropdown',
+
+                                                        ),
+                                                    ]
+                                                )
+                                            ])
+                                        ],
+                                    
+                                    
+                                    
+                                    ),
+                                html.Div(
+                                    style=styling['subdiv'],
+                                    children = [
+                                        html.Div(
+                                            style={'display':'inline-block','width':'80%'},
+                                            children = [
+                                                
+                                                html.Div(
+                                                    children= [
+                                                        html.Div(
+                                                            style={'display':'inline-block'},
+                                                            children=[html.Div(id='MonDate')]
+                                                            ),
+                                                            
+
+                                                        dcc.Input(id='MonHour',type='number',placeholder='HH',style={'width':'60px'}),
+                                                        dcc.Input(id='MonMin',type='number',placeholder='MM',style={'width':'60px'}),
+                                                        dcc.Dropdown(id='MonType',options=[{'label': i['omschryving'] , 'value': i['id']} for i in pd.DataFrame.from_dict(frames['urensoort']).to_dict('records')],style={'display':'inline-block','vertical-align':'bottom','width':'150px'},value=1),
+                                                        html.Button('Opslaan', id='monSave', n_clicks=0),
+                                                        html.Div(id='savedMon', style={'display': 'inline-block', 'font-weight':'normal'})
+                                                        ]
+                                                    ),
+                                                html.Div(
+                                                    children= [
+                                                        html.Div(
+                                                            style={'display':'inline-block'},
+                                                            children=[html.Div(id='TueDate')]
+                                                            ),
+                                                            
+                                                        
+                                                        dcc.Input(id='TueHour',type='number',placeholder='HH',style={'width':'60px'}),
+                                                        dcc.Input(id='TueMin',type='number',placeholder='MM',style={'width':'60px'}),
+                                                        dcc.Dropdown(id='TueType',options=[{'label': i['omschryving'] , 'value': i['id']} for i in pd.DataFrame.from_dict(frames['urensoort']).to_dict('records')],style={'display':'inline-block','vertical-align':'bottom','width':'150px'},value=1),
+                                                        html.Button('Opslaan', id='tueSave', n_clicks=0),
+                                                        html.Div(id='savedTue', style={'display': 'inline-block', 'font-weight':'normal'})
+                                                        
+                                                        ]
+                                                    ),
+                                                html.Div(
+                                                    children= [
+                                                        html.Div(
+                                                            style={'display':'inline-block'},
+                                                            children=[html.Div(id='WedDate')]
+                                                            ),
+                                                            
+                                                        
+                                                        dcc.Input(id='WedHour',type='number',placeholder='HH',style={'width':'60px'}),
+                                                        dcc.Input(id='WedMin',type='number',placeholder='MM',style={'width':'60px'}),
+                                                        dcc.Dropdown(id='WedType',options=[{'label': i['omschryving'] , 'value': i['id']} for i in pd.DataFrame.from_dict(frames['urensoort']).to_dict('records')],style={'display':'inline-block','vertical-align':'bottom','width':'150px'},value=1),
+                                                        html.Button('Opslaan', id='wedSave', n_clicks=0),
+                                                        html.Div(id='savedWed', style={'display': 'inline-block', 'font-weight':'normal'})
+                                                        ]
+                                                    ),
+                                                html.Div(
+                                                    children= [
+                                                        html.Div(
+                                                            style={'display':'inline-block'},
+                                                            children=[html.Div(id='ThuDate')]
+                                                            ),
+                                                            
+                                                        
+                                                        dcc.Input(id='ThuHour',type='number',placeholder='HH',style={'width':'60px'}),
+                                                        dcc.Input(id='ThuMin',type='number',placeholder='MM',style={'width':'60px'}),
+                                                        dcc.Dropdown(id='ThuType',options=[{'label': i['omschryving'] , 'value': i['id']} for i in pd.DataFrame.from_dict(frames['urensoort']).to_dict('records')],style={'display':'inline-block','vertical-align':'bottom','width':'150px'},value=1),
+                                                        html.Button('Opslaan', id='thuSave', n_clicks=0),
+                                                        html.Div(id='savedThu', style={'display': 'inline-block', 'font-weight':'normal'})
+                                                        ]
+                                                    ),
+                                                html.Div(
+                                                    children= [
+                                                        html.Div(
+                                                            style={'display':'inline-block'},
+                                                            children=[html.Div(id='FriDate')]
+                                                            ),
+                                                            
+                                                        
+                                                        dcc.Input(id='FriHour',type='number',placeholder='HH',style={'width':'60px'}),
+                                                        dcc.Input(id='FriMin',type='number',placeholder='MM',style={'width':'60px'}),
+                                                        dcc.Dropdown(id='FriType',options=[{'label': i['omschryving'] , 'value': i['id']} for i in pd.DataFrame.from_dict(frames['urensoort']).to_dict('records')],style={'display':'inline-block','vertical-align':'bottom','width':'150px'},value=1),
+                                                        html.Button('Opslaan', id='friSave', n_clicks=0),
+                                                        html.Div(id='savedFri', style={'display': 'inline-block', 'font-weight':'normal'})
+                                                        ]
+                                                    ),
+                                                html.Div(
+                                                    children= [
+                                                        html.Div(
+                                                            style={'display':'inline-block'},
+                                                            children=[html.Div(id='SatDate')]
+                                                            ),
+                                                            
+                                                        
+                                                        dcc.Input(id='SatHour',type='number',placeholder='HH',style={'width':'60px'}),
+                                                        dcc.Input(id='SatMin',type='number',placeholder='MM',style={'width':'60px'}),
+                                                        dcc.Dropdown(id='SatType',options=[{'label': i['omschryving'] , 'value': i['id']} for i in pd.DataFrame.from_dict(frames['urensoort']).to_dict('records')],style={'display':'inline-block','vertical-align':'bottom','width':'150px'},value=1),
+                                                        html.Button('Opslaan', id='satSave', n_clicks=0),
+                                                        html.Div(id='savedSat', style={'display': 'inline-block', 'font-weight':'normal'})
+                                                        ]
+                                                    ),
+                                                html.Div(
+                                                    children= [
+                                                        html.Div(
+                                                            style={'display':'inline-block'},
+                                                            children=[html.Div(id='SunDate')]
+                                                            ),
+                                                            
+                                                        
+                                                        dcc.Input(id='SunHour',type='number',placeholder='HH',style={'width':'60px'}),
+                                                        dcc.Input(id='SunMin',type='number',placeholder='MM',style={'width':'60px'}),
+                                                        dcc.Dropdown(id='SunType',options=[{'label': i['omschryving'] , 'value': i['id']} for i in pd.DataFrame.from_dict(frames['urensoort']).to_dict('records')],style={'display':'inline-block','vertical-align':'bottom','width':'150px'},value=1),
+                                                        html.Button('Opslaan', id='sunSave', n_clicks=0),
+                                                        html.Div(id='savedSun', style={'display': 'inline-block', 'font-weight':'normal'})
+                                                        ]
+                                                    ),
+                                                ]
+                                                
+                                                                                                
+                                            ),
+
+                                        html.Div(id='defofniet'),
+                                        html.Button('Voorlopig/Definitief maken',id='toggleDef',n_clicks=0), 
+                                        
+                                        
+                                        
+                                        
+                                        ]
+                                    ),
+                                html.Div(style=styling['subdiv'],
+                                     children = [
+                                         html.H2('Uren deze week'),
+                                         dcc.Graph(id='urenGraph'), 
+                                         
+                                         ]
+                                    )
+                                
+                                ]
+                            ),
+                        dcc.Tab(
+                            label = 'Standaard uren',
+                            style = styling['tabs'],
+                            children = [
+                                html.Div(
+                                    style = styling['subdiv'],
+                                    children = [
+                                        html.H2('Standaard uren per persoon'),
+                                        dash_table.DataTable(
+                                            id='standaardurenTable',
+                                            columns = [{'name': i, 'id': i} for i in frames['standaarduren'].keys() if i != 'id'],
+                                            data = pd.DataFrame.from_dict(frames['standaarduren']).to_dict('records')
+                                            )
+                                        ]
+                                    ),
+                                html.Div(
+                                    style = styling['subdiv'],
+                                    children = [
+                                        html.H2('Wijzigen van standaard uren'),
+                                        dcc.Markdown('Kies de persoon om te wijzigen'),
+                                        dcc.Dropdown(
+                                            id='persoonStandaarduren',
+                                            options=[{'label': frames['standaarduren']['Persoon'].get(i) ,'value': frames['standaarduren']['ID persoon'].get(i) } for i in frames['standaarduren']['id'].keys()]
+                                            ),
+                                        html.Div(
+                                            children = [
+                                                html.Div(
+                                                    children= [
+                                                        html.Div(
+                                                            style={'display':'inline-block'},
+                                                            children=[dcc.Markdown('Maandag')]
+                                                            ),
+                                                            
+
+                                                        dcc.Input(id='MonHourStd',type='number',placeholder='HH',style={'width':'60px'}),
+                                                        dcc.Input(id='MonMinStd',type='number',placeholder='MM',style={'width':'60px'})
+                                                        ]
+                                                    ),
+                                                html.Div(
+                                                    children= [
+                                                        html.Div(
+                                                            style={'display':'inline-block'},
+                                                            children=[dcc.Markdown('Dinsdag')]
+                                                            ),
+                                                            
+                                                        
+                                                        dcc.Input(id='TueHourStd',type='number',placeholder='HH',style={'width':'60px'}),
+                                                        dcc.Input(id='TueMinStd',type='number',placeholder='MM',style={'width':'60px'})
+                                                        ]
+                                                    ),
+                                                html.Div(
+                                                    children= [
+                                                        html.Div(
+                                                            style={'display':'inline-block'},
+                                                            children=[dcc.Markdown('Woensdag')]
+                                                            ),
+                                                            
+                                                        
+                                                        dcc.Input(id='WedHourStd',type='number',placeholder='HH',style={'width':'60px'}),
+                                                        dcc.Input(id='WedMinStd',type='number',placeholder='MM',style={'width':'60px'})
+                                                        ]
+                                                    ),
+                                                html.Div(
+                                                    children= [
+                                                        html.Div(
+                                                            style={'display':'inline-block'},
+                                                            children=[dcc.Markdown('Donderdag')]
+                                                            ),
+                                                            
+                                                        
+                                                        dcc.Input(id='ThuHourStd',type='number',placeholder='HH',style={'width':'60px'}),
+                                                        dcc.Input(id='ThuMinStd',type='number',placeholder='MM',style={'width':'60px'})
+                                                        ]
+                                                    ),
+                                                html.Div(
+                                                    children= [
+                                                        html.Div(
+                                                            style={'display':'inline-block'},
+                                                            children=[dcc.Markdown('Vrijdag')]
+                                                            ),
+                                                            
+                                                        
+                                                        dcc.Input(id='FriHourStd',type='number',placeholder='HH',style={'width':'60px'}),
+                                                        dcc.Input(id='FriMinStd',type='number',placeholder='MM',style={'width':'60px'})
+                                                        ]
+                                                    ),
+                                                html.Div(
+                                                    children= [
+                                                        html.Div(
+                                                            style={'display':'inline-block'},
+                                                            children=[dcc.Markdown('Zaterdag')]
+                                                            ),
+                                                            
+                                                        
+                                                        dcc.Input(id='SatHourStd',type='number',placeholder='HH',style={'width':'60px'}),
+                                                        dcc.Input(id='SatMinStd',type='number',placeholder='MM',style={'width':'60px'})
+                                                        ]
+                                                    ),
+                                                html.Div(
+                                                    children= [
+                                                        html.Div(
+                                                            style={'display':'inline-block'},
+                                                            children=[dcc.Markdown('Zondag')]
+                                                            ),
+                                                            
+                                                        
+                                                        dcc.Input(id='SunHourStd',type='number',placeholder='HH',style={'width':'60px'}),
+                                                        dcc.Input(id='SunMinStd',type='number',placeholder='MM',style={'width':'60px'})
+                                                        ]
+                                                    ),
+                                                ]
+                                                
+                                                                                                
+                                            ),
+                                        html.Button('Pas gegevens aan', id='changeStdUren',n_clicks=0)
+                                        
+                                        ]
+                                    )
+                                
+                                
+                                ]
                             ),
                         dcc.Tab(
                             label = 'Personen',
@@ -167,7 +473,7 @@ layout = html.Div(
                                         html.H2('Persoon verwijderen'),
                                         dcc.Dropdown(
                                             id='personenDropdown',
-                                            options=[{'label': i['Voornaam'] + ' ' + i['Tussenvoegsel']+ ' ' + i['Achternaam'], 'value': i['id']} for i in pd.DataFrame.from_dict(frames['personen']).to_dict('records')]
+                                            options=[{'label': i['Voornaam'] + ' ' + i['Tussenvoegsel']+ ' ' + i['Achternaam'], 'value': i['Voornaam'] + ' ' + i['Tussenvoegsel']+ ' ' + i['Achternaam']} for i in pd.DataFrame.from_dict(frames['personen']).to_dict('records')]
                                             ),
                                         html.Button('Persoon logisch verwijderen', id='delPersBtn',n_clicks=0)
                                         

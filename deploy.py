@@ -70,7 +70,7 @@ def createDB():
     
     standaardUren = """CREATE TABLE IF NOT EXISTS standaarduren (
                         id integer PRIMARY KEY AUTOINCREMENT,
-                        id_contract integer,
+                        id_persoon integer,
                         maandag integer,
                         dinsdag integer,
                         woensdag integer,
@@ -103,12 +103,30 @@ def createDB():
                         laatstedagweek text
     );"""
     
+    opgeslagenweken =  """CREATE TABLE IF NOT EXISTS opgeslagenweken (
+                        id integer PRIMARY KEY AUTOINCREMENT,
+                        id_contract integer,
+                        jaar integer,
+                        isoweek integer,
+                        ind_def integer
+    );"""
+    
+    uren =  """CREATE TABLE IF NOT EXISTS uren (
+                datum text,
+                id_contract integer,
+                id_soort integer,
+                uren integer,
+                PRIMARY KEY (datum, id_contract, id_soort)
+    );"""
+    
     create_table(conn, persoonTable)
     create_table(conn, werkgeversTable)
     create_table(conn, contractenTable)
     create_table(conn, soortenUrenTable)
     create_table(conn, standaardUren)
     create_table(conn, kalender)
+    create_table(conn, opgeslagenweken)
+    create_table(conn, uren)
 
 def addUrensoort(conn, percentage,omschryving):
     sql = "INSERT INTO urensoort (percentage, omschryving) VALUES ('"+\
@@ -120,7 +138,23 @@ def addUrensoort(conn, percentage,omschryving):
         conn.commit()
     except Error as e:
         print(e)
-    
+
+def addStandaarduren(conn, id_persoon, mon, tue, wed, thu, fri, sat, sun):
+    sql = "INSERT INTO standaarduren (id_persoon, maandag, dinsdag, woensdag, donderdag, vrijdag, zaterdag, zondag) VALUES ('"+\
+    str(id_persoon)+"','"+\
+    str(mon)+"','"+\
+    str(tue)+"','"+\
+    str(wed)+"','"+\
+    str(thu)+"','"+\
+    str(fri)+"','"+\
+    str(sat)+"','"+\
+    str(sun)+"');"
+    try:
+        c = conn.cursor()
+        c.execute(sql)
+        conn.commit()
+    except Error as e:
+        print(e)
     
 def addKalenderdata(jaar):
     import pandas as pd

@@ -59,6 +59,26 @@ def addPerson(conn, voornaam, tussenvoegsel, achternaam, email):
     except:
         pass
 
+def urenDef(conn, jaar, week, contract, definitief):
+    sql = "select * from opgeslagenweken where jaar = '"+str(jaar)+"' and isoweek = '"+ str(week) + "' and id_contract = '"+str(contract)+"';"
+    try:
+        conn = create_connection(database)
+        c = conn.cursor()
+        if c.execute(sql).fetchall() == []:
+            newsql = "insert into opgeslagenweken (id_contract,jaar, isoweek, ind_def) values ('" + str(contract) + "','" +str(jaar)+"','"+str(week)+"','"+str(definitief) + "');"
+        else:
+            newsql = "update opgeslagenweken set ind_def= "+str(definitief) + " where isoweek = '" + str(week) + "' and jaar = '" + str(jaar) +"' and id_contract = '" +str(contract)+"';"
+        try:
+            conn = create_connection(database)
+            c = conn.cursor()
+            c.execute(newsql)
+            conn.commit()
+        except Error as e:
+            print(e)
+            
+    except:
+        pass
+    
 def addContract(conn, dd_begin, dd_eind, percentage, uurloon, verlofuren, bijzverlofuren, werkgever, email):        
     conn = create_connection(database)
     c = conn.cursor()
@@ -96,7 +116,34 @@ def addUrensoort(conn, percentage,omschryving):
         conn.commit()
     except Error as e:
         print(e)
-
+def stdUrenwijzigen(persoon_id, mon, tue, wed, thu, fri, sat, sun):
+    sql = "DELETE FROM standaarduren WHERE id_persoon = '" + persoon_id + "';"
+    conn = create_connection(database)
+    try:
+        c = conn.cursor()
+        c.execute(sql)
+        conn.commit()
+    except Error as e:
+        print(e)
+    addStandaarduren(conn, persoon_id, mon, tue, wed, thu, fri, sat, sun)
+        
+        
+def addStandaarduren(conn, id_persoon, mon, tue, wed, thu, fri, sat, sun):
+    sql = "INSERT INTO standaarduren (id_persoon, maandag, dinsdag, woensdag, donderdag, vrijdag, zaterdag, zondag) VALUES ('"+\
+    str(id_persoon)+"','"+\
+    str(mon)+"','"+\
+    str(tue)+"','"+\
+    str(wed)+"','"+\
+    str(thu)+"','"+\
+    str(fri)+"','"+\
+    str(sat)+"','"+\
+    str(sun)+"');"
+    try:
+        c = conn.cursor()
+        c.execute(sql)
+        conn.commit()
+    except Error as e:
+        print(e)        
 
 def readTable(table,inclusieflogischverwijderd=True):
     import pandas as pd
@@ -132,7 +179,7 @@ def dframes():
     contracten['id_werkgever'] = contracten['id_werkgever'].astype(int)
     merged = contracten.merge(readTable('persoon'), left_on='id_persoon',right_on='id', how='left').merge(readTable('werkgever'), left_on='id_werkgever', right_on='id', how='left')
     merged['persoon'] = merged[['voornaam','tussenvoegsel','achternaam']].agg(' '.join, axis=1)
-    merged = merged[['id_x','dd_begin','dd_eind','percentage','uurloon','verlofuren','bijzverlofuren','persoon','naam']]
+    merged = merged[['id_x','dd_begin','dd_eind','percentage','uurloon','verlofuren','bijzverlofuren','persoon','naam','id_persoon']]
     merged.set_index('id_x')
     contracten2 = merged.rename(columns={'id_x': 'id',
                                         'dd_begin': 'Begindatum',
@@ -146,8 +193,31 @@ def dframes():
                                                                                          })
     
     frames['contracten'] = contracten2.to_dict()
-    return frames
 
+    merged = readTable('standaarduren').merge(readTable('persoon'), left_on='id_persoon',right_on='id', how='left')
+    merged['persoon'] = merged[['voornaam','tussenvoegsel','achternaam']].agg(' '.join, axis=1)
+    merged = merged[['id_x','id_persoon','persoon','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag','zondag']]
+    standaarduren = merged.rename(columns={'id_x': 'id',
+                                          'id_persoon': 'ID persoon',
+                                          'persoon': 'Persoon',
+                                          'maandag': 'Maandag',
+                                          'dinsdag': 'Dinsdag',
+                                          'woensdag': 'Woensdag',
+                                          'donderdag': 'Donderdag',
+                                          'vrijdag': 'Vrijdag',
+                                          'zaterdag': 'Zaterdag',
+                                          'zondag': 'Zondag'
+                                         })
+    frames['standaarduren'] = standaarduren.to_dict()
+    
+    frames['opgeslagenweken'] = readTable('opgeslagenweken').to_dict()
+    
+    frames['urensoort'] = readTable('urensoort').to_dict()
+    
+    frames['uren'] = readTable('uren').to_dict()
+    
+    return frames
+    
 
 
 def logischVerwijderen(table,id):
@@ -161,3 +231,31 @@ def logischVerwijderen(table,id):
         con.close()
     except Error as e:
         print(e)
+
+        
+        
+def urenInvullen(datum, contract, uren, minuten, soort):
+    sql = "select * from uren where datum = '" + datum + "' and id_contract = '" + str(contract) + "' and id_soort = '" + str(soort) + "';"
+    hours = int(uren) + int(minuten) / 60
+    try:
+        conn = create_connection(database)
+        c = conn.cursor()
+        if c.execute(sql).fetchall() == []:
+            
+            newsql = "insert into uren (datum, id_contract, id_soort, uren) values ('"+datum+"','"+str(contract)+"','"+str(soort)+"','"+str(hours)+"');"
+        else:
+            newsql = "update uren set uren = '"+str(hours)+"' where datum = '"+datum+"' and id_contract = '"+str(contract)+"' and id_soort = '"+str(soort)+"';"
+        print(newsql)
+        try:
+            conn = create_connection(database)
+            c = conn.cursor()
+            c.execute(newsql)
+            conn.commit()
+        except Error as e:
+            print(e)
+    except:
+        pass
+    
+    
+    
+    
