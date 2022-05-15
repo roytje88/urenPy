@@ -1,5 +1,5 @@
 # urenPy
-Een web-applicatie om je eigen uren te registreren.
+Een web-applicatie om je eigen uren te registreren, geheel in Python geschreven.
 
 # Functionaliteiten
 De app heeft verschillende functionaliteiten ingebouwd. 
